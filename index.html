@@ -20,6 +20,8 @@
             font-family: "Roboto";
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
     <title>Portfolio</title>
 </head>
 
@@ -103,7 +105,7 @@
                         <br>
                     </div>
                     <div class="w3-container">
-                        <div style="width: 500px" id="reader"></div>
+                        <video id="preview"></video>
                     </div>
                     <!-- <div class="w3-container">
                         <h5 class="w3-opacity"><b>Designer</b></h5>
@@ -158,21 +160,18 @@
 </body>
 <script src="html5-qrcode.min.js"></script>
 <script>
-var html5QrcodeScanner = new Html5QrcodeScanner(
-    "reader", { fps: 10, qrbox: 250 });
-
-function onScanSuccess(decodedText, decodedResult) {
-    // Handle on success condition with the decoded text or result.
-    console.log(`Scan result: ${decodedText}`, decodedResult);
-    // ...
-    html5QrcodeScanner.clear();
-    // ^ this will stop the scanner (video feed) and clear the scan area.
-}
-
-function onScanError(errorMessage) {
-    // handle on error condition, with error message
-}
-
-html5QrcodeScanner.render(onScanSuccess, onScanError);
+let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
+scanner.addListener('scan', function(content) {
+    alert(content);
+});
+Instascan.Camera.getCameras().then(function(cameras) {
+    if (cameras.length > 0) {
+        scanner.start(cameras[0]);
+    } else {
+        console.error('No cameras found.');
+    }
+}).catch(function(e) {
+    console.error(e);
+});
 </script>
 </html>
